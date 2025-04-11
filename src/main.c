@@ -1,4 +1,3 @@
-
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,11 +17,14 @@ void printHeader() {
 }
 
 void printSummary(Image *img, QuadTreeNode *qt, double execTimeMs, double compressionTarget, int method, double threshold, int minBlockSize, const char *inputPath, const char *outputPath) {
+    long originalSizeKB = getFileSizeInKB(inputPath);
+    long compressedSizeKB = getFileSizeInKB(outputPath);
+
     printf("\n[SUMMARY] Compression Summary:\n");
     printf("------------------------------------------------------------\n");
-    printf("Original Image Size   : %d x %d px\n", img->width, img->height);
-    printf("Final Image Size      : %d x %d px\n", img->width, img->height);
-    printf("Compression Ratio     : %.2f%%\n", compressedPercentage(img, quadTreeNodeCount(qt)));
+    printf("Original Image Size   : %ld KB\n", originalSizeKB);
+    printf("Compressed Image Size : %ld KB\n", compressedSizeKB);
+    printf("Compression Ratio     : %.2f%%\n", calculateCompressedPercentage(inputPath, outputPath));
     printf("QuadTree Depth        : %d\n", quadTreeDepth(qt));
     printf("Nodes Created         : %d\n", quadTreeNodeCount(qt));
     printf("Execution Time        : %.2f ms\n", execTimeMs);
@@ -161,10 +163,15 @@ int main() {
         return 1;
     }
 
-    
+    applyQuadTreeToImage(qt, img->pixels);
     saveImage(outputImage, img);
     
-
+    double compressionPercentage = calculateCompressedPercentage(inputImage, outputImage);
+    if (compressionPercentage >= 0) {
+        printf("[INFO] Compression Percentage: %.2f%%\n", compressionPercentage);
+    } else {
+        printf("[ERROR] Compression percentage calculation failed.\n");
+    }
 
     endTime = clock();
     double execTimeMs = ((double)(endTime - startTime) / CLOCKS_PER_SEC) * 1000;

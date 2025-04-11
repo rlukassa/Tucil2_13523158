@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "quadtree.h"
 #include "utils.h"
-#include <math.h>
+
 
 // Membuat Quadtree secara rekursif
 QuadTreeNode *buildQuadTree(Image *img, int x, int y, int size, int minBlockSize, double threshold, int method) {
@@ -15,6 +15,10 @@ QuadTreeNode *buildQuadTree(Image *img, int x, int y, int size, int minBlockSize
             return NULL;
         }
 
+        // Isi koordinat, ukuran, dan warna rata-rata
+        node->x = x;
+        node->y = y;
+        node->size = size;
         calculateAverageColor(img->pixels, x, y, size, &node->color[0], &node->color[1], &node->color[2]);
         node->topLeft = node->topRight = node->bottomLeft = node->bottomRight = NULL;
         return node;
@@ -27,19 +31,16 @@ QuadTreeNode *buildQuadTree(Image *img, int x, int y, int size, int minBlockSize
         return NULL;
     }
 
+    // Isi koordinat dan ukuran
+    node->x = x;
+    node->y = y;
+    node->size = size;
+
+    // Rekursif untuk setiap sub-blok
     node->topLeft = buildQuadTree(img, x, y, halfSize, minBlockSize, threshold, method);
     node->topRight = buildQuadTree(img, x + halfSize, y, halfSize, minBlockSize, threshold, method);
     node->bottomLeft = buildQuadTree(img, x, y + halfSize, halfSize, minBlockSize, threshold, method);
     node->bottomRight = buildQuadTree(img, x + halfSize, y + halfSize, halfSize, minBlockSize, threshold, method);
-
-    if (!node->topLeft || !node->topRight || !node->bottomLeft || !node->bottomRight) {
-        freeQuadTree(node->topLeft);
-        freeQuadTree(node->topRight);
-        freeQuadTree(node->bottomLeft);
-        freeQuadTree(node->bottomRight);
-        free(node);
-        return NULL;
-    }
 
     return node;
 }

@@ -14,4 +14,5 @@ typedef struct Image {
 Image *readImage(const char *filename); // Membaca gambar dari file
 void saveImage(const char *filename, Image *img); // Menyimpan gambar ke file
 void freeImage(Image *img); // Membebaskan memori gambar
+long getFileSizeInKB(const char *filename);
 #endif

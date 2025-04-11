@@ -3,7 +3,8 @@
 #include <string.h>
 #include <sys/stat.h>
 #include "utils.h"
-#include <math.h>
+
+
 
 
 // cek apakah format file gambar valid (.jpg, .jpeg, .png)  
@@ -12,7 +13,6 @@ bool isValidImageFormat(const char *filename) {
     if (!ext) return false;
     return strcmp(ext, ".jpg") == 0 || strcmp(ext, ".jpeg") == 0 || strcmp(ext, ".png") == 0;
 }
-
 
 // Cek apakah file ada di path yang diberikan
 bool fileExists(const char *path) {
@@ -28,11 +28,18 @@ const char *getFilenameFromPath(const char *path) {
 }
 
 // hitung persentase kompresi berdasarkan ukuran gambar asli dan ukuran quadtree
-double compressedPercentage(Image *img, int nodeCount) {
-    int originalSize = img->width * img->height * 3; // 3 bytes per pixel (RGB)
-    int compressedSize = nodeCount * sizeof(QuadTreeNode); // ukuran quadtree node
-    return (1.0 - ((double)compressedSize / originalSize)) * 100.0;
+double calculateCompressedPercentage(const char *originalFile, const char *compressedFile) {
+    long originalSize = getFileSizeInKB(originalFile);
+    long compressedSize = getFileSizeInKB(compressedFile);
+
+    if (originalSize <= 0 || compressedSize <= 0) {
+        printf("[ERROR] Failed to get file sizes.\n");
+        return 0.0;
+    }
+
+    return ((double)(originalSize - compressedSize) / originalSize) * 100.0;
 }
+
 // hitung rata-rata warna dari blok piksel
 void calculateAverageColor(Pixel **pixels, int x, int y, int size, double *avgR, double *avgG, double *avgB) {
     if (size <= 0 || pixels == NULL) {
@@ -56,6 +63,26 @@ void calculateAverageColor(Pixel **pixels, int x, int y, int size, double *avgR,
     *avgB = sumB / count;
 }
 
+void applyQuadTreeToImage(QuadTreeNode *node, Pixel **pixels) {
+    if (!node) return;
+
+    if (!node->topLeft && !node->topRight && !node->bottomLeft && !node->bottomRight) {
+        // Simpul daun: Terapkan warna rata-rata ke seluruh blok
+        for (int i = node->y; i < node->y + node->size; i++) {
+            for (int j = node->x; j < node->x + node->size; j++) {
+                pixels[i][j].r = node->color[0];
+                pixels[i][j].g = node->color[1];
+                pixels[i][j].b = node->color[2];
+            }
+        }
+    } else {
+        // Rekursif ke sub-blok
+        applyQuadTreeToImage(node->topLeft, pixels);
+        applyQuadTreeToImage(node->topRight, pixels);
+        applyQuadTreeToImage(node->bottomLeft, pixels);
+        applyQuadTreeToImage(node->bottomRight, pixels);
+    }
+}
 
 // hitung error berdasarkan metode yang dipilih
 double calculateError(Pixel **pixels, int x, int y, int size, int method) {

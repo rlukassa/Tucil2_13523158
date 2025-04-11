@@ -1,111 +1,173 @@
-# 🤖 Kompress Gambar dengan Quadtree - Divide and Conquer Algorthm Implementation
+# 📦 Quadtree-Based Image Compression - Divide and Conquer Algorithm Implementation
 
 🎯 **Tugas Kecil 2 - Strategi Algoritma**  
 📌 **Institut Teknologi Bandung, Informatika, K-3**  
-💁🏼‍♂️ **Author : Lukas Raja Agripa**
 
 ---
 
-## 🏆 **Tentang Proyek Ini**  
+## ‼️ **Tentang Projek Ini**  
 
-Proyek ini merupakan bagian dari **Tugas Besar 1 Strategi Algoritma** yang mengharuskan mahasiswa mengembangkan **bot permainan Robocode Tank Royale** menggunakan **Algoritma Greedy**.  
-Tujuan utama bot ini adalah **memenangkan pertempuran** dengan strategi yang mengoptimalkan skor setinggi mungkin.  
+Program ini mengimplementasikan algoritma **kompresi gambar berbasis Quadtree** menggunakan bahasa **C** dan pendekatan **Divide and Conquer**.  
+Tujuannya adalah untuk mengurangi ukuran gambar dengan tetap mempertahankan kualitas visual sebisa mungkin melalui pembagian blok berdasarkan homogenitas warna.
 
-### 🔥 **Apa Itu Robocode Tank Royale?**  
-Robocode adalah permainan pemrograman di mana pemain **menulis kode untuk bot tank virtual** yang bertarung satu sama lain dalam sebuah arena.  
-- Pemain **tidak mengendalikan bot secara langsung**, melainkan hanya menulis program yang menentukan strategi dan perilaku bot.  
-- **Robocode Tank Royale** adalah versi terbaru yang memungkinkan **bot berkompetisi melalui jaringan**.  
+## 🌲 **Apa Itu Quadtree**  
 
----
-
-## 🚀 **Fitur Bot Kami**  
-✔️ **Menggunakan Algoritma Greedy** untuk mengoptimalkan skor dan bertahan lebih lama dalam pertempuran.  
-✔️ **4 Bot Berbeda** dengan strategi unik yang menggunakan heuristic berbeda.  
-✔️ **Menghindari serangan dengan cerdas** untuk meminimalkan damage.  
-✔️ **Menyerang lawan secara efisien** untuk memaksimalkan skor kemenangan.  
-✔️ **Beradaptasi dengan kondisi arena** untuk menentukan langkah optimal.  
+Quadtree adalah struktur data pohon yang digunakan untuk membagi ruang dua dimensi menjadi empat bagian kuadran berulang kali. Pada kompresi gambar, quadtree digunakan untuk merepresentasikan area homogen dengan satu node, sehingga mengurangi kebutuhan penyimpanan piksel individual.
+Dalam konteks program ini:
+- Setiap node mewakili sebuah persegi di citra.
+- Jika warna dalam satu persegi memiliki deviasi di bawah threshold, maka node tersebut menjadi daun.
+- Jika tidak, maka node akan membagi diri menjadi 4 sub-node dan proses diulang.
 
 ---
 
-## 🛠 **Cara Menjalankan Bot**  
+## 🚀 Fitur Utama
 
-### 1️⃣ **Persiapan Awal**  
-Pastikan Anda memiliki: 
+- Dukungan format input **.jpg, .jpeg, .png**
+- Pemilihan metode perhitungan error (Variance, MAD, Max Deviation, Entropy, SSIM)
+- Threshold dan ukuran blok minimum dapat dikonfigurasi
+- Target rasio kompresi dinamis
+- Statistik hasil kompresi (kedalaman quadtree, jumlah simpul, dll.)
+- Output file bisa disesuaikan atau di-*default*-kan secara otomatis
+- Dukungan output GIF (bonus) - masih dalam pengembangan
 
-- ✅ **.NET 9.0+** (Cek dengan `dotnet --version`)
-- ✅ **Keseluruhan file program Robocode Tank Royale** (Download di `https://robocode.sourceforge.io/`)
-- ✅ **.NET 6.0+** (Cek dengan `dotnet --version`)  
+---
 
-### 2️⃣ **Clone Repository**  
-```sh
-git clone https://github.com/rlukassa/Tubes1_Tang-ang-ang-ang
-cd tubes1-if2211-starter-pack-1.0
+## 🗂️ Struktur Folder
+
 ```
 
-### 3️⃣ **Jalankan Game Engine**  
-1. Buka **Robocode Tank Royale**  
-2. Pilih **"Start Local Server"**  
-3. Pastikan game engine berjalan sebelum menjalankan bot  
-
-### 4️⃣ **Jalankan Bot**  
-```sh
-dotnet build
-dotnet run 
+|__ bin/
+├── doc/
+├── src/                  # Folder utama berisi file source code
+│   ├── output/           # Default base hasil kompresi apabila salah
+│   ├── main.c
+│   ├── image.c
+│   ├── image.h
+│   ├── quadtree.c
+│   ├── quadtree.h
+│   ├── utils.c
+│   ├── utils.h
+│   ├── stb_image.h
+│   ├── stb_write_image.h
+│  
+├── test/             # Testing file untuk kompresi
+│   └── images.jpeg
+├          
+└── README.md             # Dokumentasi ini
 ```
 
-Bot akan terhubung ke game engine dan siap bertempur! 🚀  
+---
+
+## ▶️ Cara Menjalankan
+
+*Clone* repository
+```bash
+git clone https://github.com/rlukassa/Tucil2_13523158
+```
+
+Masuk kedalam struktur direktori project ini
+
+```bash
+cd src 
+gcc -o [nama exec] main.c image.c utils.c quadtree.c
+./[nama exec]
+```
+
+Kemudian ikuti input interaktif:
+
+1. Alamat absolut gambar input (.jpg, .jpeg, .png)  
+2. Metode error (1–5):  
+   - `1 = Variance`  
+   - `2 = Mean Absolute Deviation (MAD)`  
+   - `3 = Max Pixel Difference`  
+   - `4 = Entropy`  
+   - `5 = SSIM (bonus)`  
+3. Threshold (menyesuaikan dengan metode error)  
+4. Ukuran blok minimum  
+5. Target rasio kompresi (0 = nonaktif)  
+6. Alamat output gambar hasil kompresi  
+7. Alamat output GIF (opsional) - masih dalam pengembangan
+
+Jika input tidak valid, program akan memberikan feedback/error handling dan mengulang input.
 
 ---
 
-## 📌 **Spesifikasi Implementasi**  
-✅ **Bahasa Pemrograman:** C# (.NET)  
-✅ **4 Bot Berbeda dengan Strategi Greedy Unik**  
-✅ **Mengoptimalkan Skor Akhir Pertempuran**  
-✅ **Menghindari Bot Sampel dari Starter Pack**  
+## 📊 Contoh Output
+
+```
+============================================================
+                 IMAGE COMPRESSION TOOL
+============================================================
+------Implementation of Divide and Conquer Algorithm-------
+-----------------Author: Lukas Raja Agripa-----------------
+============================================================
+
+[INFO] .gif file masih dalam tahap pengembangan ~ Lukas
+[INPUT] Enter the absolute path of the image to compress (jpeg, jpg, png): xx/xxx/yy/zz.jpeg
+[OK] Yey ! File found!
+[INPUT] Enter error calculation method:
+        1. Variance
+        2. MAD
+        3. Max Pixel Difference
+        4. Entropy
+        5. SSIM
+        Choice: 5
+[INPUT] Enter threshold value (non-negative): 0.001
+[INPUT] Enter minimum block size (positive integer): 10
+[INPUT] Enter compression target percentage (0 to disable, 1.0 = 100%): 0 
+[INPUT] Enter output image path: xx.jpeg
+[INFO] Oh no ! You forgot to give the absolute path program.
+[INFO] But That's okay ! -> Using default: Compressed_xx.jpeg
+
+[PROCESS] Compressing image... Please wait...
+
+[SUCCESS] Image saved successfully to ./output/Compressed_xx.jpeg
+
+[SUMMARY] Compression Summary:
+------------------------------------------------------------
+Original Image Size   : width x height px
+Final Image Size      : wdith x height px
+Compression Ratio     : yxz%
+QuadTree Depth        : 6
+Nodes Created         : 1289
+Execution Time        : xxx ms
+------------------------------------------------------------
+Thank you for using my compression tool!
+```
 
 ---
 
-## 📜 **Dokumentasi Tambahan**  
-📌 **Panduan Resmi Robocode Tank Royale** → [Get Started With Robocode](https://docs.google.com/document/d/12upAKLU9E7tS6-xMUpJZ8gA1L76YngZNCc70AaFgyMY/edit?tab=t.0)  
-📌 **Starter Pack yang Digunakan** → [Tubes1-IF2211-Starter-Pack](https://github.com/Ariel-HS/tubes1-if2211-starter-pack/releases/tag/v1.0)  
+## 💡 Catatan Tambahan
+
+- Jika nama file output tidak disertakan, program akan otomatis memberi nama `Compressed_[nama_file_input]`
+- Jika path output tidak valid, file akan disimpan di folder `output/`
+- stb_image_write.h dan stb_image.h diperlukan ! Untuk menyimpan file lebih aman dan mudah.
 
 ---
 
-## 🖼 **Tampilan Bot dalam Permainan**  
-![Gambar 1 : Homepage ](https://github.com/user-attachments/assets/90099012-d710-4ce6-a364-16eebf2426a4)
-![Gambar 2 : Setup Bots ](https://github.com/user-attachments/assets/d35faf56-ddfe-4e4f-af45-2f8e223f90f6)
-![Gambar 3 : Gameplay ](https://github.com/user-attachments/assets/34fdb240-2261-40e9-9004-4c805c5c6a5f)
-![Gambar 4 : Endgame](https://github.com/user-attachments/assets/f3a7a518-63a6-4682-a909-6c45c8b00edf)
+## 📚 Referensi
+
+- Quadtree Compression Algorithm  
+- SSIM: https://en.wikipedia.org/wiki/Structural_similarity  
+- Entropy in Image Compression  
+- Image Processing in C (libjpeg, stb_image)
 
 ---
 
-## 👨‍💻 **Tim Pengembang**  
+## 🧠 Pengembang
+
+Created with 📸 by:  
 
 <p align="center">
   <table>
     <tr align="center">
       <td>
-        <img src="https://github.com/RafaAbdussalam.png" width="100" height="100"><br>
-        <b>Rafa Abdussalam Danadyaksa</b><br>
-        13523133
-      </td>
-      <td>
         <img src="https://github.com/rlukassa.png" width="100" height="100"><br>
         <b>Lukas Raja Agripa</b><br>
         13523158
       </td>
-      <td>
-        <img src="https://github.com/inRiza.png" width="100" height="100"><br>
-        <b>Muhammad Rizain Firdaus</b><br>
-        13523164
-      </td>
     </tr>
-  </table>
+   </table>
 </p>
 
----
 
-## 📄 **Lisensi**  
-Proyek ini menggunakan lisensi [MIT](LICENSE). Anda bebas untuk memodifikasi dan mengembangkan lebih lanjut!  
-
-📩 Jika ada pertanyaan atau saran, silakan hubungi kami. 🚀

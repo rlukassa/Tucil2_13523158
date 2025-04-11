@@ -9,6 +9,7 @@
 #include "stb_image_write.h"
 #include "image.h"
 
+#include <sys/stat.h>
 
 
 // Membaca gambar dari file
@@ -92,4 +93,13 @@ void freeImage(Image *img) {
     }
     free(img->pixels); // Bebaskan matriks piksel
     free(img); // Bebaskan struktur gambar
+}
+
+long getFileSizeInKB(const char *filename) {
+    struct stat st;
+    if (stat(filename, &st) == 0) {
+        return st.st_size / 1024; // Konversi byte ke KB
+    }
+    printf("[ERROR] Failed to get file size for: %s\n", filename);
+    return -1; // Jika gagal mendapatkan ukuran file
 }
