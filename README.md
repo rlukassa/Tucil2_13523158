@@ -125,8 +125,8 @@ Jika input tidak valid, program akan memberikan feedback/error handling dan meng
 
 [SUMMARY] Compression Summary:
 ------------------------------------------------------------
-Original Image Size   : width x height px
-Final Image Size      : wdith x height px
+Original Image Size   : m KB
+Final Image Size      : n KB 
 Compression Ratio     : yxz%
 QuadTree Depth        : 6
 Nodes Created         : 1289
